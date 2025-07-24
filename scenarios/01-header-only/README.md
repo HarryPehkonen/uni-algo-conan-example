@@ -21,11 +21,11 @@ This scenario demonstrates using uni-algo as a header-only library - the simples
 conan install . -o "uni-algo/*:header_only=True" --build=missing
 
 # Build with CMake
-cmake --preset conan-debug
-cmake --build . --config Debug
+cmake --preset conan-release
+cmake --build . --config Release
 
 # Run examples
-./unicode_example
+./unicode_example_headeronly
 ./simple_test
 ```
 
@@ -37,8 +37,16 @@ cmake --build . --config Debug
 
 # Or manually:
 conan install . -o "uni-algo/*:header_only=True" --build=missing
-g++ -std=c++17 -DUNI_ALGO_HEADER_ONLY -I~/.conan2/p/uni-*/p/include ../../shared/src/unicode_example.cpp -o unicode_example
-g++ -std=c++17 -DUNI_ALGO_HEADER_ONLY -I~/.conan2/p/uni-*/p/include ../../shared/src/simple_test.cpp -o simple_test
+
+# Find uni-algo header path
+UNI_ALGO_INCLUDE_DIR=$(echo ~/.conan2/p/uni-*/p/include)
+
+# Won't work because of limitations in header-only version:
+# g++ -std=c++17 -DUNI_ALGO_HEADER_ONLY -I${UNI_ALGO_INCLUDE_DIR} ../../shared/src/unicode_example.cpp -o unicode_example
+
+# Works:
+g++ -std=c++17 -DUNI_ALGO_HEADER_ONLY -I${UNI_ALGO_INCLUDE_DIR} ../../shared/src/unicode_example_headeronly.cpp -o unicode_example_headeronly
+g++ -std=c++17 -DUNI_ALGO_HEADER_ONLY -I${UNI_ALGO_INCLUDE_DIR} ../../shared/src/simple_test.cpp -o simple_test
 ```
 
 ## Key Points

@@ -43,10 +43,20 @@ ctest --preset conan-release  # or run directly with proper LD_LIBRARY_PATH
 ./run.sh unicode_example
 ./run.sh simple_test
 
-# Or manually:
+# Or manually (all examples work with shared library):
 conan install . -o "uni-algo/*:header_only=False" -o "uni-algo/*:shared=True" --build=missing
-g++ -std=c++17 -I~/.conan2/p/b/uni-*/p/include ../../shared/src/unicode_example.cpp -L~/.conan2/p/b/uni-*/p/lib -luni-algo -o unicode_example
-LD_LIBRARY_PATH=~/.conan2/p/b/uni-*/p/lib:$LD_LIBRARY_PATH ./unicode_example
+
+# Find uni-algo library paths
+UNI_ALGO_INCLUDE_DIR=$(echo ~/.conan2/p/uni-*/p/include)
+UNI_ALGO_LIB_DIR=$(dirname $(find ~/.conan2 -name "libuni-algo.so*" -type f | head -1))
+
+# All of these work (unlike header-only scenario):
+g++ -std=c++17 -I${UNI_ALGO_INCLUDE_DIR} ../../shared/src/unicode_example.cpp -L${UNI_ALGO_LIB_DIR} -luni-algo -o unicode_example
+g++ -std=c++17 -I${UNI_ALGO_INCLUDE_DIR} ../../shared/src/simple_test.cpp -L${UNI_ALGO_LIB_DIR} -luni-algo -o simple_test
+
+# Remember to set library path when running:
+LD_LIBRARY_PATH=${UNI_ALGO_LIB_DIR}:$LD_LIBRARY_PATH ./unicode_example
+LD_LIBRARY_PATH=${UNI_ALGO_LIB_DIR}:$LD_LIBRARY_PATH ./simple_test
 ```
 
 ## Key Points

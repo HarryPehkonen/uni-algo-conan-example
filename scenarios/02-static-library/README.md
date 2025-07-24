@@ -36,10 +36,16 @@ cmake --build . --config Release
 # Use the build script (handles path finding automatically)
 ./build.sh
 
-# Or manually:
+# Or manually (all examples work with static library):
 conan install . -o "uni-algo/*:header_only=False" -o "uni-algo/*:shared=False" --build=missing
-g++ -std=c++17 -I~/.conan2/p/b/uni-*/p/include ../../shared/src/unicode_example.cpp -L~/.conan2/p/b/uni-*/p/lib -luni-algo -o unicode_example
-g++ -std=c++17 -I~/.conan2/p/b/uni-*/p/include ../../shared/src/simple_test.cpp -L~/.conan2/p/b/uni-*/p/lib -luni-algo -o simple_test
+
+# Find uni-algo library paths
+UNI_ALGO_INCLUDE_DIR=$(echo ~/.conan2/p/uni-*/p/include)
+UNI_ALGO_LIB_DIR=$(dirname $(find ~/.conan2 -name "libuni-algo.a" -type f | head -1))
+
+# All of these work (unlike header-only scenario):
+g++ -std=c++17 -I${UNI_ALGO_INCLUDE_DIR} ../../shared/src/unicode_example.cpp -L${UNI_ALGO_LIB_DIR} -luni-algo -o unicode_example
+g++ -std=c++17 -I${UNI_ALGO_INCLUDE_DIR} ../../shared/src/simple_test.cpp -L${UNI_ALGO_LIB_DIR} -luni-algo -o simple_test
 ```
 
 ## Key Points

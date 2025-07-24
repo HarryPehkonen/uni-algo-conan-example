@@ -1,5 +1,14 @@
 # Static Library Scenario
-# Note: uni-algo package is found by parent CMakeLists.txt
+cmake_minimum_required(VERSION 3.15)
+project(StaticScenario)
+
+# Mark toolchain file as used to avoid warning
+if(CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "Ignoring toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+endif()
+
+# Find uni-algo package (no-op if already found by parent)
+find_package(uni-algo REQUIRED)
 
 # Create executables with unique names for unified build
 add_executable(static_unicode_example ../../shared/src/unicode_example.cpp)

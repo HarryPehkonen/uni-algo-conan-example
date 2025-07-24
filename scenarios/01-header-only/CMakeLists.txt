@@ -1,5 +1,9 @@
 # Header-Only Scenario
-# Note: uni-algo package is found by parent CMakeLists.txt
+cmake_minimum_required(VERSION 3.15)
+project(HeaderOnlyScenario)
+
+# Find uni-algo package (no-op if already found by parent)
+find_package(uni-algo REQUIRED)
 
 # Create executables with unique names for unified build
 add_executable(header_only_unicode_example_headeronly ../../shared/src/unicode_example_headeronly.cpp)

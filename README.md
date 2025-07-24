@@ -1,6 +1,6 @@
 # uni-algo Conan Examples
 
-[![Cross-Platform Build and Test](https://github.com/HarryPehkonen/uni-algo-conan-example/actions/workflows/cross-platform-test.yml/badge.svg)](https://github.com/HarryPehkonen/uni-algo-conan-example/actions/workflows/cross-platform-test.yml)
+[![Cross-Platform Build and Test](https://github.com/HarryPehkonen/uni-algo-conan-example/actions/workflows/unified-build.yml/badge.svg)](https://github.com/HarryPehkonen/uni-algo-conan-example/actions/workflows/unified-build.yml)
 
 This repository demonstrates how to use the [uni-algo](https://github.com/uni-algo/uni-algo) Unicode library via Conan package manager in three different configurations: **header-only**, **static library**, and **shared library**.
 

@@ -1,5 +1,9 @@
 # Shared Library Scenario
-# Note: uni-algo package is found by parent CMakeLists.txt
+cmake_minimum_required(VERSION 3.15)
+project(SharedScenario)
+
+# Find uni-algo package (no-op if already found by parent)
+find_package(uni-algo REQUIRED)
 
 # Create executables with unique names for unified build
 add_executable(shared_unicode_example ../../shared/src/unicode_example.cpp)

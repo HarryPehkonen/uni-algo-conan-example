@@ -1,0 +1,133 @@
+name: Unified CMake Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        build_type: [Release] # Keep this capitalized for Conan/CMake settings
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+          - os: macos-latest  
+            compiler: clang
+          - os: windows-latest
+            compiler: msvc
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install Conan
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install conan
+        
+    - name: Configure Conan profile
+      shell: bash
+      run: |
+        conan profile detect --force
+        
+    - name: Set up MSVC (Windows only)
+      if: matrix.os == 'windows-latest'
+      uses: microsoft/setup-msbuild@v2
+      
+    - name: Display system info
+      shell: bash
+      run: |
+        echo "=== System Information ==="
+        echo "OS: ${{ matrix.os }}"
+        echo "Compiler: ${{ matrix.compiler }}"
+        echo "Build type: ${{ matrix.build_type }}"
+        echo "Python version:"
+        python --version
+        echo "Conan version:"
+        conan --version
+        echo "=========================="
+        
+    - name: Set CMake Preset Names
+      id: set_presets
+      shell: bash
+      run: |
+        build_type_lower=$(echo "${{ matrix.build_type }}" | tr '[:upper:]' '[:lower:]')
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "configure_preset=conan-default" >> $GITHUB_OUTPUT
+          echo "build_preset=conan-$build_type_lower" >> $GITHUB_OUTPUT
+        else
+          echo "configure_preset=conan-$build_type_lower" >> $GITHUB_OUTPUT
+          echo "build_preset=conan-$build_type_lower" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Test Header-Only Scenario
+      shell: bash
+      run: |
+        echo "=== Testing Header-Only Scenario ==="
+        conan install . -o "uni-algo/*:header_only=True" --build=missing -s build_type=${{ matrix.build_type }} -s compiler.cppstd=17 --output-folder=build/${{ matrix.build_type }}
+        cmake --preset ${{ steps.set_presets.outputs.configure_preset }}
+        cmake --build --preset ${{ steps.set_presets.outputs.build_preset }} --target header_only_simple_test header_only_unicode_example_headeronly
+        ctest --preset ${{ steps.set_presets.outputs.build_preset }} --verbose -R "header_only"
+        echo "✓ Header-only scenario completed successfully"
+        
+    - name: Clean build directory
+      shell: bash
+      run: rm -rf build/
+        
+    - name: Test Static Library Scenario
+      shell: bash
+      run: |
+        echo "=== Testing Static Library Scenario ==="
+        conan install . -o "uni-algo/*:header_only=False" -o "uni-algo/*:shared=False" --build=missing -s build_type=${{ matrix.build_type }} -s compiler.cppstd=17 --output-folder=build/${{ matrix.build_type }}
+        cmake --preset ${{ steps.set_presets.outputs.configure_preset }}
+        cmake --build --preset ${{ steps.set_presets.outputs.build_preset }} --target static_simple_test static_unicode_example
+        ctest --preset ${{ steps.set_presets.outputs.build_preset }} --verbose -R "static"
+        echo "✓ Static library scenario completed successfully"
+        
+    - name: Clean build directory (2)
+      shell: bash
+      run: rm -rf build/
+        
+    - name: Test Shared Library Scenario
+      # Skip Windows: uni-algo cannot be built as shared library with MSVC
+      # due to template design and symbol export limitations
+      if: matrix.os != 'windows-latest'
+      shell: bash
+      run: |
+        echo "=== Testing Shared Library Scenario ==="
+        conan install . -o "uni-algo/*:header_only=False" -o "uni-algo/*:shared=True" --build=missing -s build_type=${{ matrix.build_type }} -s compiler.cppstd=17 --output-folder=build/${{ matrix.build_type }}
+        cmake --preset ${{ steps.set_presets.outputs.configure_preset }}
+        cmake --build --preset ${{ steps.set_presets.outputs.build_preset }} --target shared_simple_test shared_unicode_example
+        ctest --preset ${{ steps.set_presets.outputs.build_preset }} --verbose -R "shared"
+        echo "✓ Shared library scenario completed successfully"
+        
+    - name: Summary
+      if: always()
+      shell: bash
+      run: |
+        echo "=== Test Summary for ${{ matrix.os }} ==="
+        echo "Platform: ${{ matrix.os }}"
+        echo "Compiler: ${{ matrix.compiler }}"
+        echo "Build type: ${{ matrix.build_type }}"
+        echo "Job Status: ${{ job.status }}"
+        if [[ "${{ job.status }}" == "success" ]]; then
+          echo "Result: PASSED"
+        else
+          echo "Result: FAILED"
+        fi
+        echo "Check individual step results above for details"

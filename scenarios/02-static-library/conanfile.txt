@@ -1,0 +1,11 @@
+[requires]
+uni-algo/1.2.0
+
+[options]
+# Static library configuration - linked at build time
+uni-algo/*:header_only=False
+uni-algo/*:shared=False
+
+[generators]
+CMakeDeps
+CMakeToolchain

@@ -1,0 +1,11 @@
+[requires]
+uni-algo/1.2.0
+
+[options]
+# Shared library configuration - linked at runtime
+uni-algo/*:header_only=False
+uni-algo/*:shared=True
+
+[generators]
+CMakeDeps
+CMakeToolchain

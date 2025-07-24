@@ -1,0 +1,44 @@
+# Build artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+CMakePresets.json
+/build/
+/CMakeUserPresets.json
+
+# Conan generated files
+conanbuild.*
+conanrun.*
+conanbuildenv-*.sh
+conanrunenv-*.sh
+deactivate_conan*.sh
+cmakedeps_macros.cmake
+conan_toolchain.cmake
+conandeps_legacy.cmake
+
+# Executables
+unicode_example
+simple_test
+program
+test_final
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp

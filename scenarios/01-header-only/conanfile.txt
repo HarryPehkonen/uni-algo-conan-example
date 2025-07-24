@@ -1,0 +1,10 @@
+[requires]
+uni-algo/1.2.0
+
+[options]
+# Header-only configuration - no linking required
+uni-algo/*:header_only=True
+
+[generators]
+CMakeDeps
+CMakeToolchain

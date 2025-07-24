@@ -1,0 +1,14 @@
+[requires]
+uni-algo/1.2.0
+
+[generators]
+CMakeToolchain
+CMakeDeps
+
+[options]
+# Default to static library, can be overridden per scenario
+uni-algo/*:header_only=False
+uni-algo/*:shared=False
+
+[layout]
+cmake_layout

@@ -113,6 +113,8 @@ This project supports multiple build approaches:
 Build all scenarios from the root directory:
 
 ```bash
+# All from the root directory of the project
+
 # Header-only configuration
 conan install . -o "uni-algo/*:header_only=True" --build=missing
 cmake --preset conan-default
